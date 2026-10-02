@@ -1,0 +1,7 @@
+$kind: http-request
+description: Public endpoint. Returns data as an array of questions populated with author name and tags, plus answerCount. An empty database returns 404.
+url: "{{baseUrl}}/questions"
+method: GET
+auth:
+  type: noauth
+order: 1000

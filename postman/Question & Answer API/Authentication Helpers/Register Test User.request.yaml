@@ -1,0 +1,16 @@
+$kind: http-request
+description: Creates a user using the actual registration fields. A repeated email returns 409. Change the email before rerunning.
+url: "{{baseUrl}}/auth/register"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Postman Tester",
+      "email": "postman.tester@example.com",
+      "password": "Password123!",
+      "isAdmin": false
+    }
+order: 1000

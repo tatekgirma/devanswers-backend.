@@ -31,13 +31,15 @@
 ## Testing
 
 - Vitest runs in the Node environment with tests matching `tests/**/*.test.js`.
-- Tests run serially (`fileParallelism: false`) and can use `mongodb-memory-server` via `tests/setup.js`.
+- Tests run serially (`fileParallelism: false`) with 60-second test and hook timeouts.
+- Integration tests use `supertest` and `mongodb-memory-server` through `tests/setup.js`; unit tests mock model/service dependencies with Vitest.
 - `supertest` is available for HTTP-level tests.
-- The repository currently has no matching test files, so `npm test` reports that no test files were found. Add focused tests under `tests/` when changing behavior.
+- Add focused unit tests under `tests/unit/` and API tests under `tests/integration/` when changing behavior.
 
 ## Important Boundaries and Pitfalls
 
-- `src/routes/index.js` currently mounts authentication and tag routes. Question and answer route/controller files exist but are placeholders and are not currently mounted; verify the route registry before assuming an endpoint is live.
+- `src/routes/index.js` mounts authentication, question, answer, and tag routes under `/api`; verify the route registry when adding or changing endpoints.
+- Question routes also expose nested answer creation and listing at `/api/questions/:questionId/answers`; answer mutation and voting routes live under `/api/answers`.
 - `npm run populate` deletes existing users, questions, answers, and tags before inserting seed data. Treat it as destructive and never use it against a shared or production database.
 - `.env` is Git-ignored and must be created locally from `.env.example`; do not commit secrets.
 - Authentication behavior depends on both `JWT_SECRET` and `JWT_EXPIRATION`.

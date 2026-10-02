@@ -1,0 +1,9 @@
+$kind: http-request
+description: Requires a valid token and answer ownership or admin access. Test another user's token for 403, a missing answer for 404, and no/invalid token for 401.
+url: "{{baseUrl}}/answers/{{answerId}}"
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 4000

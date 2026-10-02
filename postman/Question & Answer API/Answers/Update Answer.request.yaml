@@ -1,0 +1,17 @@
+$kind: http-request
+description: Requires a valid token and answer ownership or admin access. answerText is the supported body field. Test another user's token for 403, a missing answer for 404, missing answerText for validation behavior, and no/invalid token for 401.
+url: "{{baseUrl}}/answers/{{answerId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "answerText": "Updated answer text for the API test."
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 3000

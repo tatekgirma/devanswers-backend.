@@ -1,0 +1,7 @@
+$kind: http-request
+description: Public endpoint. Returns data as an array of populated answers. A question with no answers returns 404; test a missing or malformed questionId.
+url: "{{baseUrl}}/questions/{{questionId}}/answers"
+method: GET
+auth:
+  type: noauth
+order: 1000

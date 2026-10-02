@@ -1,0 +1,28 @@
+$kind: http-request
+description: Requires a valid token and an existing questionId. answerText is required. Missing answerText returns 400; no/invalid token returns 401; invalid or missing questionId is an error.
+url: "{{baseUrl}}/questions/{{questionId}}/answers"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "answerText": "Use Supertest for HTTP assertions and Postman for exploratory checks."
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Answer created', function () {
+          pm.response.to.have.status(201);
+      });
+      const json = pm.response.json();
+      if (json.data && json.data._id) {
+          pm.collectionVariables.set('answerId', json.data._id);
+      }
+    language: text/javascript
+order: 2000

@@ -1,0 +1,7 @@
+$kind: http-request
+description: Public endpoint. Returns data as one question with populated author/tags and an answers array; also increments views. Test a missing or malformed questionId for error behavior.
+url: "{{baseUrl}}/questions/{{questionId}}"
+method: GET
+auth:
+  type: noauth
+order: 2000

@@ -1,0 +1,30 @@
+$kind: http-request
+description: Requires a valid token. title and description are required; tags is an optional comma-separated string. Missing/invalid token returns 401; missing title or description returns 400.
+url: "{{baseUrl}}/questions"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "How do I test an Express API?",
+      "description": "I want to verify authenticated and unauthenticated API behavior.",
+      "tags": "javascript, express, testing"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Question created', function () {
+          pm.response.to.have.status(200);
+      });
+      const json = pm.response.json();
+      if (json.data && json.data._id) {
+          pm.collectionVariables.set('questionId', json.data._id);
+      }
+    language: text/javascript
+order: 3000

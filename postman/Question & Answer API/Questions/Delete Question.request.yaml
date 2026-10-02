@@ -1,0 +1,9 @@
+$kind: http-request
+description: Requires a valid token and resource ownership or admin access. Deletes related answers too. Test another user's token for 403, a missing resource for 404, and no/invalid token for 401.
+url: "{{baseUrl}}/questions/{{questionId}}"
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 5000

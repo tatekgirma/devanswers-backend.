@@ -1,0 +1,9 @@
+$kind: http-request
+description: Requires a valid token. The vote service handles first votes, repeated votes, and switching vote direction. Test no/invalid token and a missing or malformed questionId.
+url: "{{baseUrl}}/questions/{{questionId}}/downvote"
+method: POST
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 7000

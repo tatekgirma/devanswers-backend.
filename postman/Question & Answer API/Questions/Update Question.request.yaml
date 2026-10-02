@@ -1,0 +1,19 @@
+$kind: http-request
+description: Requires a valid token and resource ownership or admin access. All fields are optional in the service; tags remains a comma-separated string when supplied. Test with another user's token for 403, a missing resource for 404, and no/invalid token for 401.
+url: "{{baseUrl}}/questions/{{questionId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "How do I test an Express API reliably?",
+      "description": "Updated question description.",
+      "tags": "javascript, express, postman"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+order: 4000

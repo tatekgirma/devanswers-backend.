@@ -1,0 +1,7 @@
+$kind: collection
+description: Manual test collection for the DevAnswers API. The API is mounted at /api. Run Login first to populate the token variable, then create a question and answer to populate questionId and answerId. Protected requests document missing-token, invalid-token, ownership, invalid-ID, and validation checks in their descriptions.
+variables:
+  baseUrl: http://localhost:3000/api
+  token: ""
+  questionId: ""
+  answerId: ""

@@ -1,0 +1,3 @@
+$kind: collection
+description: Optional setup requests. Register a non-admin test user, then run Login to store the returned JWT in the collection token variable.
+order: 1000

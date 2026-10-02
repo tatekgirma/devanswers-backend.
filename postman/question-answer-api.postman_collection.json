@@ -1,0 +1,339 @@
+{
+  "info": {
+    "_postman_id": "a8f60ad2-1de2-4bdb-a7c3-8f98af6ef2a4",
+    "name": "Question & Answer API",
+    "description": "Manual collection for the DevAnswers Question and Answer API. Set token to a JWT returned by POST /api/auth/login before running protected requests. Set questionId and answerId to existing MongoDB ObjectIds, or run the create requests to capture them automatically. Owner/admin endpoints require the authenticated user to own the resource or have isAdmin=true. For error checks, remove the inherited Authorization header for a missing-token test, replace token with an invalid JWT for an invalid-token test, use another user's token for a 403 authorization test, use a malformed ObjectId for an invalid-ID test, and omit required JSON fields for validation tests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "questionId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "answerId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Questions",
+      "item": [
+        {
+          "name": "Get All Questions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Public endpoint. Returns questions populated with author and tags, plus answerCount. Expected success status: 200. If no questions exist, the implementation returns 404.",
+            "url": {
+              "raw": "{{baseUrl}}/api/questions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Question By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Public endpoint. Returns the question with populated author/tags and all answers. Expected success status: 200. Test a missing or malformed questionId for the resource error behavior.",
+            "url": {
+              "raw": "{{baseUrl}}/api/questions/{{questionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions", "{{questionId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Requires a valid token. tags must be a comma-separated string, not an array. Missing title or description returns 400; no/invalid token returns 401. Expected success status: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"How do I test an Express API?\",\n  \"description\": \"I need a reliable way to test routes, authentication, and JSON responses.\",\n  \"tags\": \"javascript, nodejs, testing\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/questions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Create question returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "pm.test('Response contains a question ID', function () {",
+                  "    pm.expect(json.data && json.data._id).to.be.ok;",
+                  "});",
+                  "if (json.data && json.data._id) {",
+                  "    pm.collectionVariables.set('questionId', json.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Update Question",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Requires a valid token and an existing questionId. Only the question owner or an admin may update it; another authenticated user should receive 403. Missing fields may be omitted for a partial update. Expected success status: 200. Test missing/invalid token, invalid ID, nonexistent ID, and missing fields.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"How do I test an Express API reliably?\",\n  \"description\": \"Updated description for the API testing question.\",\n  \"tags\": \"javascript, nodejs, supertest\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/questions/{{questionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions", "{{questionId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Question",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "description": "Requires a valid token and an existing questionId. Only the owner or an admin may delete it; another authenticated user should receive 403. Expected success status: 200. Test missing/invalid token, invalid ID, and nonexistent ID.",
+            "url": {
+              "raw": "{{baseUrl}}/api/questions/{{questionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions", "{{questionId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upvote Question",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "description": "Requires a valid token and an existing questionId. Expected success status: 200. Repeat the request, switch to Downvote Question, and test an invalid/nonexistent ID to verify handleVote behavior.",
+            "url": {
+              "raw": "{{baseUrl}}/api/questions/{{questionId}}/upvote",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions", "{{questionId}}", "upvote"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Downvote Question",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "description": "Requires a valid token and an existing questionId. Expected success status: 200. Test repeating the vote, switching from Upvote Question, missing/invalid token, and an invalid/nonexistent ID.",
+            "url": {
+              "raw": "{{baseUrl}}/api/questions/{{questionId}}/downvote",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions", "{{questionId}}", "downvote"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Answers",
+      "item": [
+        {
+          "name": "Get Question Answers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Public endpoint. Returns all answers for questionId. Expected success status: 200. If no answers exist, the implementation returns 404. Test a malformed or nonexistent questionId.",
+            "url": {
+              "raw": "{{baseUrl}}/api/questions/{{questionId}}/answers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions", "{{questionId}}", "answers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Answer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Requires a valid token and an existing questionId. answerText is required; missing it returns 400. No/invalid token returns 401. Expected success status: 201.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answerText\": \"Use Supertest for HTTP assertions and Postman for exploratory checks.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/questions/{{questionId}}/answers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions", "{{questionId}}", "answers"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Create answer returns 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "pm.test('Response contains an answer ID', function () {",
+                  "    pm.expect(json.data && json.data._id).to.be.ok;",
+                  "});",
+                  "if (json.data && json.data._id) {",
+                  "    pm.collectionVariables.set('answerId', json.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Update Answer",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Requires a valid token and an existing answerId. Only the answer owner or an admin may update it; another authenticated user should receive 403. answerText is required by the service behavior. Expected success status: 200. Test missing/invalid token, invalid/nonexistent ID, and missing answerText.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answerText\": \"Updated answer with a clearer testing recommendation.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/answers/{{answerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "answers", "{{answerId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Answer",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "description": "Requires a valid token and an existing answerId. Only the answer owner or an admin may delete it; another authenticated user should receive 403. Expected success status: 200. Test missing/invalid token, invalid ID, and nonexistent ID.",
+            "url": {
+              "raw": "{{baseUrl}}/api/answers/{{answerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "answers", "{{answerId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upvote Answer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "description": "Requires a valid token and an existing answerId. Expected success status: 200. Repeat the request, switch to Downvote Answer, and test an invalid/nonexistent ID to verify handleVote behavior.",
+            "url": {
+              "raw": "{{baseUrl}}/api/answers/{{answerId}}/upvote",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "answers", "{{answerId}}", "upvote"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Downvote Answer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "description": "Requires a valid token and an existing answerId. Expected success status: 200. Test repeating the vote, switching from Upvote Answer, missing/invalid token, and an invalid/nonexistent ID.",
+            "url": {
+              "raw": "{{baseUrl}}/api/answers/{{answerId}}/downvote",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "answers", "{{answerId}}", "downvote"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
